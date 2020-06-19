@@ -33,12 +33,22 @@ type Facebox struct {
 	PictureNumber int
 }
 
+type Slack struct {
+	Apis map[string]string `mapstructure:"apis"`
+	ApiToken string  `env:"SLACK_TOKEN" envDefault:"xoxb-1176373024038-1200489057012-AhzpqcMfl07Krg1kPPfdLwCw"`
+}
+
+type Notification struct {
+	Slack Slack
+}
+
 type Config struct {
 	Tag      string // indicates the config environment prod or dev
 	Server   Server
 	Database Database
 	Camera   Camera
 	Facebox	Facebox
+	Notification Notification
 }
 
 // LoadConfig sets the application config
