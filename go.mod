@@ -7,6 +7,8 @@ require (
 	github.com/google/uuid v1.1.1
 	github.com/jinzhu/configor v1.2.0
 	github.com/machinebox/sdk-go v0.3.1
+	github.com/bxcodec/faker/v3 v3.5.0
+	github.com/sethvargo/go-password v0.1.3
 	github.com/sirupsen/logrus v1.6.0
 	gocv.io/x/gocv v0.23.0
 )

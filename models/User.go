@@ -1,8 +1,8 @@
 package models
 
 type User struct {
-	UserId string
-	UserName string
-	Password string
-	CreatedAt uint16
+	UserID    string `json:"UserID"`
+	UserName  string `json:"UserName"`
+	Password  string `json:"Password"`
+	CreatedAt uint64 `json:"Password"`
 }
