@@ -65,6 +65,7 @@ func Register() models.User {
 			gocv.IMWrite(imgPath, imgFace)
 			buf, err := gocv.IMEncode(".jpg", imgFace)
 			// train
+			// todo cleanup images
 			fbox.Teach(bytes.NewReader(buf), userID, userID)
 			imgFace.Close()
 			if err != nil {
@@ -73,6 +74,7 @@ func Register() models.User {
 			}
 		}
 	}
+
 	user := models.User{
 		UserId:    userID,
 		UserName:  username,
