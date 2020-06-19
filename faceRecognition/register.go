@@ -3,8 +3,12 @@ package faceRecognition
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"fmt"
-	"github.com/ameniGa/timeTracker/models"
+	"github.com/ameniGa/timeTracker/config"
+	"github.com/ameniGa/timeTracker/database"
+	hlp "github.com/ameniGa/timeTracker/helpers"
+	ctxUtl "github.com/ameniGa/timeTracker/helpers/context"
 	"github.com/google/uuid"
 	"github.com/machinebox/sdk-go/facebox"
 	"gocv.io/x/gocv"
@@ -12,19 +16,30 @@ import (
 	"log"
 	"os"
 	"path"
+	"path/filepath"
 	"runtime"
-	"time"
 )
 
 var (
-	blue          = color.RGBA{0, 0, 255, 0}
-
+	blue          = color.RGBA{255, 0, 0, 0}
+	conf          *config.Config
 	faceAlgorithm = "cascade/haarcascade_frontalface_default.xml"
-	fbox          = facebox.New("http://localhost:8080")
+	imgDir        = "img"
+	fbox          *facebox.Client
 )
 
-func Register() models.User {
-	// file path
+func init() {
+	var err error
+	conf, err = config.LoadConfig()
+	if err != nil {
+		log.Fatalf("cannot load config %v", err)
+	}
+	// create new fbox client
+	fbox = facebox.New(conf.Facebox.Url)
+}
+
+func Register() {
+	// cascade file path
 	_, filename, _, _ := runtime.Caller(0)
 	filepath := path.Join(path.Dir(filename), faceAlgorithm)
 	// set user name
@@ -50,7 +65,7 @@ func Register() models.User {
 	classifier := gocv.NewCascadeClassifier()
 	classifier.Load(filepath)
 
-	for count := 0; count < 3; count++ {
+	for count := 0; count < conf.Facebox.PictureNumber; count++ {
 		if ok := webcam.Read(&img); !ok || img.Empty() {
 			log.Print("cannot read image from the cam")
 			continue
@@ -65,6 +80,7 @@ func Register() models.User {
 			gocv.IMWrite(imgPath, imgFace)
 			buf, err := gocv.IMEncode(".jpg", imgFace)
 			// train
+			// todo cleanup images
 			fbox.Teach(bytes.NewReader(buf), userID, userID)
 			imgFace.Close()
 			if err != nil {
@@ -73,12 +89,8 @@ func Register() models.User {
 			}
 		}
 	}
-	user := models.User{
-		UserId:    userID,
-		UserName:  username,
-		CreatedAt: uint64(time.Now().Unix()),
-	}
-	return user
+	saveUser(userID, username)
+	cleanup()
 }
 
 func getUserInput() string {
@@ -90,4 +102,31 @@ func getUserInput() string {
 		log.Fatalf("cannot get user input %v", err)
 	}
 	return username
+}
+
+func saveUser(userID, userName string) {
+	log := hlp.GetLogger()
+	handler, err := database.Create(&conf.Database, conf.Server.Deadline, log)
+	if err != nil {
+		log.Fatalf("cannot create handler %v", err)
+	}
+	ctx, cancel := ctxUtl.AddTimeoutToCtx(context.Background(), 5)
+	defer cancel()
+	ch := make(chan error, 1)
+	handler.DbAddUser(ctx, userID, userName, ch)
+}
+
+func cleanup() {
+	_, filename, _, _ := runtime.Caller(0)
+	imgPath := path.Join(path.Dir(filename), imgDir)
+	files, err := filepath.Glob(filepath.Join(imgPath, "*"))
+	if err != nil {
+		fmt.Println("cannot read the path", err)
+	}
+	for _, file := range files {
+		err = os.RemoveAll(file)
+		if err != nil {
+			fmt.Println("cannot remove the file", err)
+		}
+	}
 }
