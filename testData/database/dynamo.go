@@ -3,6 +3,7 @@ package database
 import (
 	"github.com/ameniGa/timeTracker/config"
 	faker "github.com/bxcodec/faker/v3"
+	"github.com/google/uuid"
 	"time"
 )
 
@@ -16,7 +17,8 @@ func init() {
 	conf, _ = config.LoadConfig()
 	validConfig = &conf.Database.Presence
 	invalidConfig = &config.Presence{
-		TableName: "unknown-table",
+		UserTableName: "unknown-table",
+		TimeTableName: "unknown-table",
 	}
 
 }
@@ -37,7 +39,7 @@ func CreateTTAddUser() []TTAddUser {
 			DBConf:   validConfig,
 			Timeout:  conf.Server.Deadline,
 			Username: faker.Username(),
-			UserID:   faker.UUIDDigit(),
+			UserID:   uuid.New().String(),
 			HasError: false,
 		},
 		{
@@ -45,7 +47,7 @@ func CreateTTAddUser() []TTAddUser {
 			DBConf:   invalidConfig,
 			Timeout:  conf.Server.Deadline,
 			Username: faker.Username(),
-			UserID:   faker.UUIDDigit(),
+			UserID:   uuid.New().String(),
 			HasError: true,
 		},
 		{
@@ -53,9 +55,112 @@ func CreateTTAddUser() []TTAddUser {
 			DBConf:   validConfig,
 			Timeout:  conf.Server.Deadline,
 			Username: "",
-			UserID:   faker.UUIDDigit(),
+			UserID:   uuid.New().String(),
+			HasError: true,
+		},
+		{
+			Name:     "invalid Request: invalid timeout",
+			DBConf:   validConfig,
+			Timeout:  0,
+			Username: faker.Username(),
+			UserID:   uuid.New().String(),
+			HasError: true,
+		},
+		{
+			Name:     "invalid Request: invalid id",
+			DBConf:   validConfig,
+			Timeout:  conf.Server.Deadline,
+			Username: faker.Username(),
+			UserID:   "invalid id ",
 			HasError: true,
 		},
 	}
 	return data
+}
+
+type TTAddInOut struct {
+	Name     string
+	DBConf   *config.Presence
+	Timeout  time.Duration
+	UserID   string
+	HasError bool
+}
+
+func CreateTTAddInOut() ([]TTAddInOut, []TTAddInOut) {
+	validUserID := uuid.New().String()
+	in := []TTAddInOut{
+		{
+			Name:     "Valid Request",
+			DBConf:   validConfig,
+			Timeout:  conf.Server.Deadline,
+			UserID:   validUserID,
+			HasError: false,
+		},
+		{
+			Name:     "invalid Request: invalid conf ",
+			DBConf:   invalidConfig,
+			Timeout:  conf.Server.Deadline,
+			UserID:   validUserID,
+			HasError: true,
+		},
+		{
+			Name:     "invalid Request: missing id",
+			DBConf:   validConfig,
+			Timeout:  conf.Server.Deadline,
+			UserID:   "",
+			HasError: true,
+		},
+		{
+			Name:     "invalid Request: invalid id",
+			DBConf:   validConfig,
+			Timeout:  conf.Server.Deadline,
+			UserID:   "invalid id",
+			HasError: true,
+		},
+		{
+			Name:     "invalid Request: invalid timeout",
+			DBConf:   validConfig,
+			Timeout:  1,
+			UserID:   validUserID,
+			HasError: true,
+		},
+	}
+	out := []TTAddInOut{
+		{
+			Name:     "Valid Request",
+			DBConf:   validConfig,
+			Timeout:  conf.Server.Deadline,
+			UserID:   validUserID,
+			HasError: false,
+		},
+		{
+			Name:     "invalid Request: invalid conf ",
+			DBConf:   invalidConfig,
+			Timeout:  conf.Server.Deadline,
+			UserID:   validUserID,
+			HasError: true,
+		},
+		{
+			Name:     "invalid Request: missing id",
+			DBConf:   validConfig,
+			Timeout:  conf.Server.Deadline,
+			UserID:   "",
+			HasError: true,
+		},
+		{
+			Name:     "invalid Request: invalid timeout",
+			DBConf:   validConfig,
+			Timeout:  1,
+			UserID:   validUserID,
+			HasError: true,
+		},
+		{
+			Name:     "invalid Request: invalid id",
+			DBConf:   validConfig,
+			Timeout:  conf.Server.Deadline,
+			UserID:   "invalidId",
+			HasError: true,
+		},
+	}
+	return in, out
 }

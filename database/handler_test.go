@@ -12,10 +12,10 @@ func TestCreate(t *testing.T) {
 	log := hlp.GetLogger()
 	for _, testCase := range tableTest {
 		conf := config.Database{
-			Presence: testCase.FeedbackDb,
+			Presence: testCase.Presence,
 		}
 		t.Run(testCase.Name, func(t *testing.T) {
-			_, err := Create(&conf, log)
+			_, err := Create(&conf, 2,  log)
 			if err != nil && !testCase.HasError {
 				t.Errorf("expected success , got error: %v", err)
 			}

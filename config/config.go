@@ -17,8 +17,9 @@ type Server struct {
 }
 
 type Presence struct {
-	Type      string
-	TableName string `env:"Presence_DB_TABLE_NAME"`
+	Type          string
+	UserTableName string `env:"Presence_DB_TABLE_NAME"`
+	TimeTableName string
 }
 type Database struct {
 	Presence Presence
