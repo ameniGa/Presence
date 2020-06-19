@@ -27,11 +27,18 @@ type Database struct {
 type Camera struct {
 	DeviceID int
 }
+
+type Facebox struct {
+	Url string
+	PictureNumber int
+}
+
 type Config struct {
 	Tag      string // indicates the config environment prod or dev
 	Server   Server
 	Database Database
 	Camera   Camera
+	Facebox	Facebox
 }
 
 // LoadConfig sets the application config
