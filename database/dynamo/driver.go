@@ -7,6 +7,7 @@ import (
 	ctxUtl "github.com/ameniGa/timeTracker/helpers/context"
 	vld "github.com/ameniGa/timeTracker/helpers/validators"
 	mdl "github.com/ameniGa/timeTracker/models"
+	"github.com/ameniGa/timeTracker/notification/slack"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
@@ -79,6 +80,8 @@ func (repo *Repo) DbAddUser(ctx context.Context, userID, userName string, ch cha
 		ch <- err
 		return
 	}
+	// send password to slack
+	sendToSlack(user)
 	ch <- nil
 	return
 }
@@ -261,7 +264,6 @@ func prepareEntryTimeTrackModel(id string) mdl.TimeTrack {
 	time := mdl.TimeTrack{
 		UserID: id,
 		Entry:  strconv.FormatInt(time.Now().Unix(), 10),
-		Exit:   strconv.FormatInt(time.Now().Unix(), 10),
 		Date:   time.Now().Format("2006-01-02"),
 	}
 	return time
@@ -293,4 +295,10 @@ func prepareUserModel(userID, userName string) (*mdl.User, error) {
 
 func IsValidFields(id string, name string) bool {
 	return !vld.IsStringEmpty(id) && !vld.IsStringEmpty(name)
+}
+
+func sendToSlack(user *mdl.User){
+	conf,_ := config.LoadConfig()
+	slackHandler := slack.NewSlackHandler(conf.Notification.Slack)
+	slackHandler.SendMessage("presence",user.Password,user.UserName)
 }
