@@ -5,6 +5,7 @@ import (
 	"errors"
 	cfg "github.com/ameniGa/timeTracker/config"
 	"github.com/ameniGa/timeTracker/database/dynamo"
+	mdl "github.com/ameniGa/timeTracker/models"
 	"github.com/sirupsen/logrus"
 	"time"
 )
@@ -20,6 +21,12 @@ type PresenceHandler interface {
 
 	// DbAddExit updates a exit time for the given userId save it in the database
 	DbAddExit(ctx context.Context, userID string, ch chan<- error)
+
+	// DbGetUserByID returns a user by his id
+	DbGetUserByID(ctx context.Context, userID string, ch chan<- mdl.UserWithError)
+
+	// DbUpdateUser updates user password
+	DbUpdateUser(ctx context.Context, userID, password string, ch chan<- error)
 }
 
 // Create creates db handler based on the given config

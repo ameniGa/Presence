@@ -6,7 +6,7 @@ require (
 	github.com/aws/aws-sdk-go v1.32.5
 	github.com/bxcodec/faker/v3 v3.5.0
 	github.com/google/uuid v1.1.1
-	github.com/hegedustibor/htgo-tts v0.0.0-20200606215327-a8f5a5c8e477
+	github.com/gorilla/mux v1.7.4
 	github.com/jinzhu/configor v1.2.0
 	github.com/machinebox/sdk-go v0.3.1
 	github.com/pkg/errors v0.9.1

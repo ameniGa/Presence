@@ -1,9 +1,9 @@
 tag: dev
 
 server:
-  type: grpc
+  type: http
   host: localhost
-  port: 50077
+  port: 8080
   deadline: 5
 
 database:
