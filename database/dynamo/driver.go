@@ -165,6 +165,98 @@ func (repo *Repo) DbAddExit(ctx context.Context, userID string, ch chan<- error)
 	return
 }
 
+// DbUserByID returns a user info from user-database
+func (repo *Repo) DbGetUserByID(ctx context.Context, userID string, ch chan<- mdl.UserWithError) {
+	defer close(ch)
+
+	if ok, err := ctxUtl.IsValidCtx(ctx, repo.timeout); !ok {
+		repo.log.Error(err)
+		ch <- mdl.UserWithError{
+			Error:    err,
+		}
+		return
+	}
+	if vld.IsStringEmpty(userID) || !vld.IsValidID(userID) {
+		repo.log.Error("invalid input")
+		ch <- mdl.UserWithError{
+			Error:    errors.New("invalid input"),
+		}
+		return
+	}
+	input := dynamodb.GetItemInput{
+		Key: map[string]*dynamodb.AttributeValue{
+			"UserID": {
+				S: aws.String(userID),
+			},
+		},
+		TableName:        aws.String(repo.conf.UserTableName),
+	}
+
+	output, err := repo.GetItemWithContext(ctx, &input)
+	if err != nil {
+		repo.log.Error(err)
+		ch <- mdl.UserWithError{
+			Error:    err,
+		}
+		return
+	}
+	var userInfo mdl.UserInfo
+	dynamodbattribute.UnmarshalMap(output.Item, userInfo)
+	ch <- mdl.UserWithError{
+		UserInfo: userInfo,
+	}
+	return
+}
+
+
+// DbUserByID returns a user info from user-database
+func (repo *Repo) DbUpdateUser(ctx context.Context, userID, password string, ch chan<- error) {
+	defer close(ch)
+
+
+	if ok, err := ctxUtl.IsValidCtx(ctx, repo.timeout); !ok {
+		repo.log.Error(err)
+		ch <- err
+		return
+	}
+
+	if vld.IsStringEmpty(userID) || !vld.IsValidID(userID) {
+		repo.log.Error("invalid input")
+		ch <- errors.New("invalid input")
+		return
+	}
+
+	timeTrack := prepareExitTimeTrackModel(userID)
+
+	input := dynamodb.UpdateItemInput{
+
+		ExpressionAttributeNames: map[string]*string{
+			"#o": aws.String("Password"),
+		},
+		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
+			":o": {
+				S: aws.String(timeTrack.Exit),
+			},
+		},
+		Key: map[string]*dynamodb.AttributeValue{
+			"UserID": {
+				S: aws.String(timeTrack.UserID),
+			},
+		},
+		TableName:        aws.String(repo.conf.UserTableName),
+		UpdateExpression: aws.String("set #o = :o"),
+	}
+
+	_, err := repo.UpdateItemWithContext(ctx, &input)
+	if err != nil {
+		repo.log.Error(err)
+		ch <- err
+		return
+	}
+	ch <- nil
+	return
+}
+
 func prepareEntryTimeTrackModel(id string) mdl.TimeTrack {
 	time := mdl.TimeTrack{
 		UserID: id,
@@ -185,7 +277,7 @@ func prepareExitTimeTrackModel(id string) mdl.TimeTrack {
 }
 
 func prepareUserModel(userID, userName string) (*mdl.User, error) {
-	pass, err := password.Generate(64, 10, 10, false, false)
+	pass, err := password.Generate(12, 4, 4, false, false)
 	if err != nil {
 		return nil, err
 	}

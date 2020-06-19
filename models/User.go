@@ -7,3 +7,15 @@ type User struct {
 	CreatedAt   uint64 `json:"CreatedAt"`
 	PassChanged bool   `json:"PassChanged"`
 }
+
+type UserInfo struct {
+	UserID      string `json:"UserID"`
+	UserName    string `json:"UserName"`
+	CreatedAt   uint64 `json:"CreatedAt"`
+	PassChanged bool   `json:"PassChanged"`
+}
+
+type UserWithError struct {
+	UserInfo UserInfo
+	Error    error
+}

@@ -164,3 +164,49 @@ func CreateTTAddInOut() ([]TTAddInOut, []TTAddInOut) {
 	}
 	return in, out
 }
+
+type TTGetUser struct {
+	Name         string
+	DBConf       *config.Presence
+	Timeout      time.Duration
+	UserID       string
+	ExpectedName string
+	HasError     bool
+}
+
+func CreateTTGetUser(validUserID string) []TTGetUser {
+	return []TTGetUser{
+		{
+			Name:         "Valid Request",
+			DBConf:       validConfig,
+			Timeout:      conf.Server.Deadline,
+			UserID:       validUserID,
+			ExpectedName: "Test",
+			HasError:     false,
+		},
+		{
+			Name:         "invalid Request: invalid config",
+			DBConf:       invalidConfig,
+			Timeout:      conf.Server.Deadline,
+			UserID:       validUserID,
+			ExpectedName: "Test",
+			HasError:     false,
+		},
+		{
+			Name:         "invalid Request: invalid id",
+			DBConf:       validConfig,
+			Timeout:      conf.Server.Deadline,
+			UserID:       validUserID,
+			ExpectedName: "Test",
+			HasError:     false,
+		},
+		{
+			Name:         "invalid Request",
+			DBConf:       validConfig,
+			Timeout:      conf.Server.Deadline,
+			UserID:       validUserID,
+			ExpectedName: "Test",
+			HasError:     false,
+		},
+	}
+}
