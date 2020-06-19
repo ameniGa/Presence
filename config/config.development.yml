@@ -1,9 +1,9 @@
 tag: dev
 
 server:
-  type: grpc
+  type: http
   host: localhost
-  port: 50077
+  port: 8080
   deadline: 5
 
 database:
@@ -21,6 +21,6 @@ facebox :
 
 notification:
   slack:
-    apitoken: xoxb-1176373024038-1218304944912-3CLVhQrKAJXNe7fHVydbhKY7
+    apitoken: xoxb-1176373024038-1218304944912-wIeZgcdJ2GrTXWUC75hqVWeY
     apis:
       send: https://slack.com/api/chat.postMessage
