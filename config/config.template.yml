@@ -1,0 +1,14 @@
+server:
+  type: grpc        # communication to be used for now only grpc is supported
+  host: localhost   # grpc host
+  port: 50077       # grpc server port
+  deadline: 5      # 5 mill
+
+database:                             # database config
+
+  feedback:                           # must have for presence DB config
+    type: dynamodb                    # must be dynamodb for the time being
+    tablename:                        # dynamo table name
+
+camera:
+  deviceID: 0   #represent the default value/number of the laptop camera

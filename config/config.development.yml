@@ -1,0 +1,15 @@
+tag: dev
+
+server:
+  type: grpc
+  host: localhost
+  port: 50077
+  deadline: 5
+
+database:
+  presence:
+    type: dynamodb
+    tablename: presence-user-dev
+
+camera :
+  deviceID: 0
