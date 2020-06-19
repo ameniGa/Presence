@@ -27,5 +27,5 @@ func main() {
 	runner := services.Runner{Config: conf, Db: db}
 	r.HandleFunc(fmt.Sprintf("/api/auth"), runner.GetUser).Methods(http.MethodGet)
 	r.HandleFunc(fmt.Sprintf("/api/user"), runner.UpdateUser).Methods(http.MethodPut)
-	log.Fatal(http.ListenAndServe(conf.Server.Host, r))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf("%v:%v", conf.Server.Host, conf.Server.Port), r))
 }
