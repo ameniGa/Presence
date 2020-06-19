@@ -14,3 +14,7 @@ database:
 
 camera :
   deviceID: 0
+
+facebox :
+  url: http://localhost:8080
+  picturenumber: 3
