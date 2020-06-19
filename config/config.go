@@ -20,17 +20,30 @@ type Presence struct {
 	Type      string
 	TableName string `env:"Presence_DB_TABLE_NAME"`
 }
+
 type Database struct {
 	Presence Presence
 }
+
 type Camera struct {
 	DeviceID int
 }
+
+type Slack struct {
+	Apis map[string]string `mapstructure:"apis"`
+	ApiToken string  `env:"SLACK_TOKEN" envDefault:"xoxb-1176373024038-1200489057012-AhzpqcMfl07Krg1kPPfdLwCw"`
+}
+
+type Notification struct {
+	Slack Slack
+}
+
 type Config struct {
-	Tag      string // indicates the config environment prod or dev
-	Server   Server
-	Database Database
-	Camera   Camera
+	Tag          string // indicates the config environment prod or dev
+	Server       Server
+	Database     Database
+	Camera       Camera
+	Notification Notification
 }
 
 // LoadConfig sets the application config
