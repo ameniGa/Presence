@@ -10,12 +10,12 @@ import (
 // valid and invalid config
 var (
 	validConfig, invalidConfig *config.Presence
-	conf                       *config.Config
+	Conf                       *config.Config
 )
 
 func init() {
-	conf, _ = config.LoadConfig()
-	validConfig = &conf.Database.Presence
+	Conf, _ = config.LoadConfig()
+	validConfig = &Conf.Database.Presence
 	invalidConfig = &config.Presence{
 		UserTableName: "unknown-table",
 		TimeTableName: "unknown-table",
@@ -37,7 +37,7 @@ func CreateTTAddUser() []TTAddUser {
 		{
 			Name:     "Valid Request",
 			DBConf:   validConfig,
-			Timeout:  conf.Server.Deadline,
+			Timeout:  Conf.Server.Deadline,
 			Username: faker.Username(),
 			UserID:   uuid.New().String(),
 			HasError: false,
@@ -45,7 +45,7 @@ func CreateTTAddUser() []TTAddUser {
 		{
 			Name:     "invalid Request: invalid config",
 			DBConf:   invalidConfig,
-			Timeout:  conf.Server.Deadline,
+			Timeout:  Conf.Server.Deadline,
 			Username: faker.Username(),
 			UserID:   uuid.New().String(),
 			HasError: true,
@@ -53,7 +53,7 @@ func CreateTTAddUser() []TTAddUser {
 		{
 			Name:     "invalid Request: invalid Username",
 			DBConf:   validConfig,
-			Timeout:  conf.Server.Deadline,
+			Timeout:  Conf.Server.Deadline,
 			Username: "",
 			UserID:   uuid.New().String(),
 			HasError: true,
@@ -69,7 +69,7 @@ func CreateTTAddUser() []TTAddUser {
 		{
 			Name:     "invalid Request: invalid id",
 			DBConf:   validConfig,
-			Timeout:  conf.Server.Deadline,
+			Timeout:  Conf.Server.Deadline,
 			Username: faker.Username(),
 			UserID:   "invalid id ",
 			HasError: true,
@@ -92,28 +92,28 @@ func CreateTTAddInOut() ([]TTAddInOut, []TTAddInOut) {
 		{
 			Name:     "Valid Request",
 			DBConf:   validConfig,
-			Timeout:  conf.Server.Deadline,
+			Timeout:  Conf.Server.Deadline,
 			UserID:   validUserID,
 			HasError: false,
 		},
 		{
-			Name:     "invalid Request: invalid conf ",
+			Name:     "invalid Request: invalid Conf ",
 			DBConf:   invalidConfig,
-			Timeout:  conf.Server.Deadline,
+			Timeout:  Conf.Server.Deadline,
 			UserID:   validUserID,
 			HasError: true,
 		},
 		{
 			Name:     "invalid Request: missing id",
 			DBConf:   validConfig,
-			Timeout:  conf.Server.Deadline,
+			Timeout:  Conf.Server.Deadline,
 			UserID:   "",
 			HasError: true,
 		},
 		{
 			Name:     "invalid Request: invalid id",
 			DBConf:   validConfig,
-			Timeout:  conf.Server.Deadline,
+			Timeout:  Conf.Server.Deadline,
 			UserID:   "invalid id",
 			HasError: true,
 		},
@@ -129,21 +129,21 @@ func CreateTTAddInOut() ([]TTAddInOut, []TTAddInOut) {
 		{
 			Name:     "Valid Request",
 			DBConf:   validConfig,
-			Timeout:  conf.Server.Deadline,
+			Timeout:  Conf.Server.Deadline,
 			UserID:   validUserID,
 			HasError: false,
 		},
 		{
-			Name:     "invalid Request: invalid conf ",
+			Name:     "invalid Request: invalid Conf ",
 			DBConf:   invalidConfig,
-			Timeout:  conf.Server.Deadline,
+			Timeout:  Conf.Server.Deadline,
 			UserID:   validUserID,
 			HasError: true,
 		},
 		{
 			Name:     "invalid Request: missing id",
 			DBConf:   validConfig,
-			Timeout:  conf.Server.Deadline,
+			Timeout:  Conf.Server.Deadline,
 			UserID:   "",
 			HasError: true,
 		},
@@ -157,10 +157,56 @@ func CreateTTAddInOut() ([]TTAddInOut, []TTAddInOut) {
 		{
 			Name:     "invalid Request: invalid id",
 			DBConf:   validConfig,
-			Timeout:  conf.Server.Deadline,
+			Timeout:  Conf.Server.Deadline,
 			UserID:   "invalidId",
 			HasError: true,
 		},
 	}
 	return in, out
+}
+
+type TTGetUser struct {
+	Name         string
+	DBConf       *config.Presence
+	Timeout      time.Duration
+	UserID       string
+	ExpectedName string
+	HasError     bool
+}
+
+func CreateTTGetUser(validUserID string) []TTGetUser {
+	return []TTGetUser{
+		{
+			Name:         "Valid Request",
+			DBConf:       validConfig,
+			Timeout:      Conf.Server.Deadline,
+			UserID:       validUserID,
+			ExpectedName: "Test",
+			HasError:     false,
+		},
+		{
+			Name:         "invalid Request: invalid config",
+			DBConf:       invalidConfig,
+			Timeout:      Conf.Server.Deadline,
+			UserID:       validUserID,
+			ExpectedName: "Test",
+			HasError:     true,
+		},
+		{
+			Name:         "invalid Request: invalid id",
+			DBConf:       validConfig,
+			Timeout:      Conf.Server.Deadline,
+			UserID:       "invalidUserID",
+			ExpectedName: "Test",
+			HasError:     true,
+		},
+		{
+			Name:         "invalid context timeout",
+			DBConf:       validConfig,
+			Timeout:      0,
+			UserID:       validUserID,
+			ExpectedName: "Test",
+			HasError:     true,
+		},
+	}
 }
