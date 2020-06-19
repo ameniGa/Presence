@@ -5,6 +5,5 @@ import (
 )
 
 func main(){
-	faceRecognition.Dedect()
-
+	faceRecognition.Register()
 }

@@ -9,6 +9,7 @@ import (
 	"github.com/ameniGa/timeTracker/database"
 	hlp "github.com/ameniGa/timeTracker/helpers"
 	ctxUtl "github.com/ameniGa/timeTracker/helpers/context"
+	"github.com/ameniGa/timeTracker/notification/slack"
 	"github.com/google/uuid"
 	"github.com/machinebox/sdk-go/facebox"
 	"gocv.io/x/gocv"
@@ -28,6 +29,8 @@ var (
 	faceAlgorithm = "cascade/haarcascade_frontalface_default.xml"
 	imgDir        = "img"
 	fbox          *facebox.Client
+	slackHandler = slack.Slack{}
+	entries = map[string]bool{}
 )
 
 func init() {
@@ -38,6 +41,7 @@ func init() {
 	}
 	// create new fbox client
 	fbox = facebox.New(conf.Facebox.Url)
+	slackHandler = slack.NewSlackHandler(conf.Notification.Slack)
 }
 
 func Register() {

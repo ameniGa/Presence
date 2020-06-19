@@ -1,16 +1,17 @@
 package faceRecognition
 
 import (
-"bytes"
+	"bytes"
 	"context"
 	"fmt"
 	"github.com/ameniGa/timeTracker/database"
 	hlp "github.com/ameniGa/timeTracker/helpers"
 	ctxUtl "github.com/ameniGa/timeTracker/helpers/context"
 	"gocv.io/x/gocv"
-"image"
-"log"
+	"image"
+	"log"
 )
+
 func Dedect() {
 	// open webcam. 0 is the default device ID, change it if your device ID is different
 	webcam, err := gocv.VideoCaptureDevice(conf.Camera.DeviceID)
@@ -55,9 +56,13 @@ func Dedect() {
 			if len(faces) > 0 {
 				caption = fmt.Sprintf("%s", faces[0].Name)
 				userID := fmt.Sprintf("%s", faces[0].ID)
+
 				saveEntry(userID)
-				// todo
-				sendToSlack(userID)
+				// send to slack
+				if entries[userID] == false {
+					slackHandler.SendMessage("Presence","good morning",faces[0].Name)
+				}
+				entries[userID] = true
 			}
 
 			// draw rectangle for the face
@@ -83,8 +88,4 @@ func saveEntry(userID string) {
 	defer cancel()
 	ch := make(chan error, 1)
 	handler.DbAddEntry(ctx, userID, ch)
-}
-
-func sendToSlack(userID string){
-
 }
