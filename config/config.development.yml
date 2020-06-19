@@ -9,7 +9,8 @@ server:
 database:
   presence:
     type: dynamodb
-    tablename: presence-user-dev
+    usertablename: presence-user-dev
+    timetablename: presence-time-dev
 
 camera :
   deviceID: 0

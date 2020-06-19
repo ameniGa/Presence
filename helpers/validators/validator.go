@@ -1,9 +1,12 @@
 package validators
 
-import "strings"
+import (
+	"regexp"
+	"strings"
+)
 
 // isStringEmpty checks if a string is empty.
-func isStringEmpty(input string) bool {
+func IsStringEmpty(input string) bool {
 	return len(strings.TrimSpace(input)) == 0
 }
 
@@ -14,8 +17,19 @@ func IsNilOrEmpty(input interface{}) bool {
 	case nil:
 		return true
 	case string:
-		return isStringEmpty(obj)
+		return IsStringEmpty(obj)
 	default:
 		return false
 	}
+}
+
+
+// IsValidID validates is the string is an uuid.
+func IsValidID(id string) bool {
+	regex := regexp.MustCompile(`([0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12})`)
+	result := regex.FindStringSubmatch(id)
+	if result == nil {
+		return false
 	}
+	return true
+}
