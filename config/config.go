@@ -17,16 +17,20 @@ type Server struct {
 }
 
 type Presence struct {
-	Type      string
-	TableName string `env:"Presence_DB_TABLE_NAME"`
+	Type          string
+	UserTableName string `env:"Presence_DB_TABLE_NAME"`
+	TimeTableName string
 }
-
 type Database struct {
 	Presence Presence
 }
-
 type Camera struct {
 	DeviceID int
+}
+
+type Facebox struct {
+	Url string
+	PictureNumber int
 }
 
 type Slack struct {
@@ -39,10 +43,11 @@ type Notification struct {
 }
 
 type Config struct {
-	Tag          string // indicates the config environment prod or dev
-	Server       Server
-	Database     Database
-	Camera       Camera
+	Tag      string // indicates the config environment prod or dev
+	Server   Server
+	Database Database
+	Camera   Camera
+	Facebox	Facebox
 	Notification Notification
 }
 
