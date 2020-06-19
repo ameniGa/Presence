@@ -201,7 +201,7 @@ func (repo *Repo) DbGetUserByID(ctx context.Context, userID string, ch chan<- md
 		return
 	}
 	var userInfo mdl.UserInfo
-	dynamodbattribute.UnmarshalMap(output.Item, userInfo)
+	dynamodbattribute.UnmarshalMap(output.Item, &userInfo)
 	ch <- mdl.UserWithError{
 		UserInfo: userInfo,
 	}
