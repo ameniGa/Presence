@@ -9,23 +9,28 @@ import (
 	"github.com/ameniGa/timeTracker/database"
 	hlp "github.com/ameniGa/timeTracker/helpers"
 	ctxUtl "github.com/ameniGa/timeTracker/helpers/context"
+	"github.com/ameniGa/timeTracker/notification/slack"
 	"github.com/google/uuid"
 	"github.com/machinebox/sdk-go/facebox"
 	"gocv.io/x/gocv"
 	"image/color"
 	"log"
 	"os"
+	"os/exec"
 	"path"
 	"path/filepath"
 	"runtime"
+	"time"
 )
 
 var (
-	blue          = color.RGBA{255, 0, 0, 0}
+	red          = color.RGBA{255, 0, 0, 0}
 	conf          *config.Config
 	faceAlgorithm = "cascade/haarcascade_frontalface_default.xml"
 	imgDir        = "img"
 	fbox          *facebox.Client
+	slackHandler = slack.Slack{}
+	entries = map[string]bool{}
 )
 
 func init() {
@@ -36,6 +41,7 @@ func init() {
 	}
 	// create new fbox client
 	fbox = facebox.New(conf.Facebox.Url)
+	slackHandler = slack.NewSlackHandler(conf.Notification.Slack)
 }
 
 func Register() {
@@ -64,7 +70,7 @@ func Register() {
 	// load classifier to recognize faces
 	classifier := gocv.NewCascadeClassifier()
 	classifier.Load(filepath)
-
+	playSound()
 	for count := 0; count < conf.Facebox.PictureNumber; count++ {
 		if ok := webcam.Read(&img); !ok || img.Empty() {
 			log.Print("cannot read image from the cam")
@@ -81,7 +87,7 @@ func Register() {
 			buf, err := gocv.IMEncode(".jpg", imgFace)
 			// train
 			// todo cleanup images
-			fbox.Teach(bytes.NewReader(buf), userID, userID)
+			fbox.Teach(bytes.NewReader(buf), userID, username)
 			imgFace.Close()
 			if err != nil {
 				log.Printf("unable to encode matrix: %v", err)
@@ -129,4 +135,13 @@ func cleanup() {
 			fmt.Println("cannot remove the file", err)
 		}
 	}
+}
+
+func playSound() {
+	text := "look to the camera"
+	cmd := exec.Command("espeak", text)
+	if err := cmd.Run(); err != nil {
+		log.Fatal(err)
+	}
+	time.Sleep(5000)
 }
