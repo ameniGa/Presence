@@ -169,7 +169,6 @@ func prepareEntryTimeTrackModel(id string) mdl.TimeTrack {
 	time := mdl.TimeTrack{
 		UserID: id,
 		Entry:  strconv.FormatInt(time.Now().Unix(), 10),
-		Exit:   strconv.FormatInt(time.Now().Unix(), 10),
 		Date:   time.Now().Format("2006-01-02"),
 	}
 	return time

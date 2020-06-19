@@ -15,13 +15,15 @@ import (
 	"image/color"
 	"log"
 	"os"
+	"os/exec"
 	"path"
 	"path/filepath"
 	"runtime"
+	"time"
 )
 
 var (
-	blue          = color.RGBA{255, 0, 0, 0}
+	red          = color.RGBA{255, 0, 0, 0}
 	conf          *config.Config
 	faceAlgorithm = "cascade/haarcascade_frontalface_default.xml"
 	imgDir        = "img"
@@ -64,7 +66,7 @@ func Register() {
 	// load classifier to recognize faces
 	classifier := gocv.NewCascadeClassifier()
 	classifier.Load(filepath)
-
+	playSound()
 	for count := 0; count < conf.Facebox.PictureNumber; count++ {
 		if ok := webcam.Read(&img); !ok || img.Empty() {
 			log.Print("cannot read image from the cam")
@@ -81,7 +83,7 @@ func Register() {
 			buf, err := gocv.IMEncode(".jpg", imgFace)
 			// train
 			// todo cleanup images
-			fbox.Teach(bytes.NewReader(buf), userID, userID)
+			fbox.Teach(bytes.NewReader(buf), userID, username)
 			imgFace.Close()
 			if err != nil {
 				log.Printf("unable to encode matrix: %v", err)
@@ -129,4 +131,13 @@ func cleanup() {
 			fmt.Println("cannot remove the file", err)
 		}
 	}
+}
+
+func playSound() {
+	text := "look to the camera"
+	cmd := exec.Command("espeak", text)
+	if err := cmd.Run(); err != nil {
+		log.Fatal(err)
+	}
+	time.Sleep(5000)
 }
