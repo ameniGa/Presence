@@ -14,3 +14,9 @@ database:
 
 camera:
   deviceID: 0
+
+notification:
+  slack:
+    apitoken: xoxb-1176373024038-1218304944912-3CLVhQrKAJXNe7fHVydbhKY7
+    apis:
+      send: https://slack.com/api/chat.postMessage

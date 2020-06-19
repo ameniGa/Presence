@@ -18,3 +18,9 @@ camera :
 facebox :
   url: http://localhost:8080
   picturenumber: 3
+
+notification:
+  slack:
+    apitoken: xoxb-1176373024038-1218304944912-3CLVhQrKAJXNe7fHVydbhKY7
+    apis:
+      send: https://slack.com/api/chat.postMessage
