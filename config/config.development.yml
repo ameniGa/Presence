@@ -21,6 +21,6 @@ facebox :
 
 notification:
   slack:
-    apitoken: xoxb-1176373024038-1218304944912-wIeZgcdJ2GrTXWUC75hqVWeY
+    apitoken: xoxb-1176373024038-1218304944912-NaOrOfo6gppT0oo2LDC0Thbj
     apis:
       send: https://slack.com/api/chat.postMessage

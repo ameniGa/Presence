@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/ameniGa/timeTracker/config"
 	"github.com/ameniGa/timeTracker/database"
-	"github.com/ameniGa/timeTracker/faceRecognition"
 	"github.com/ameniGa/timeTracker/helpers"
 	"github.com/ameniGa/timeTracker/server/http/services"
 	"github.com/gorilla/mux"
@@ -13,7 +12,7 @@ import (
 )
 
 func main() {
-	faceRecognition.Register()
+	//faceRecognition.Register()
 	r := mux.NewRouter()
 	conf, err := config.LoadConfig()
 	if err != nil {
